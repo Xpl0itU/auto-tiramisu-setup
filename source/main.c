@@ -1,5 +1,7 @@
 #include <curl/curl.h>
 
+#include <coreinit/launch.h>
+
 #include <whb/proc.h>
 #include <whb/log.h>
 #include <whb/log_console.h>
@@ -209,6 +211,8 @@ done: ;
     romfsExit();
     WHBLogConsoleFree();
     WHBProcShutdown();
+
+    OSForceFullRelaunch();
 
     return 0;
 }
