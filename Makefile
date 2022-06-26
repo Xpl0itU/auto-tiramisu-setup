@@ -28,7 +28,7 @@ ROMFS 		:=	romfs
 #-------------------------------------------------------------------------------
 # options for code generation
 #-------------------------------------------------------------------------------
-CFLAGS	:=	-g -Wall -ffunction-sections \
+CFLAGS	:=	-g -Wall -Ofast -ffunction-sections \
 			$(MACHDEP)
 
 CFLAGS	+=	$(INCLUDE) -D__WIIU__ -D__WUT__
