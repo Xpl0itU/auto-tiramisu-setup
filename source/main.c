@@ -92,6 +92,9 @@ int downloadFile(const char* url, const char* path, const char* cert) {
     // Use the certificate bundle in the romfs
     curl_easy_setopt(curl, CURLOPT_CAINFO, cert);
 
+    // Follow redirects
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
     // Set the custom write function
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunction);
 
@@ -158,7 +161,7 @@ int main()
     WHBLogPrintf("Downloading Sigpatches...");
     WHBLogConsoleDraw();
 
-    if(downloadFile("https://github.com/marco-calautti/SigpatchesModuleWiiU/releases/download/1.2/01_sigpatches.rpx", "/vol/external01/wiiu/environments/tiramisu/modules/setup/01_sigpatches.rpx", "romfs:/github-com.pem") == 1) {
+    if(downloadFile("https://github.com/marco-calautti/SigpatchesModuleWiiU/releases/latest/download/01_sigpatches.rpx", "/vol/external01/wiiu/environments/tiramisu/modules/setup/01_sigpatches.rpx", "romfs:/github-com.pem") == 1) {
         WHBLogPrintf("Error while downloading Sigpatches");
         WHBLogConsoleDraw();
         goto done;
