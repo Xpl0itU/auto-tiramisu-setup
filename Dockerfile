@@ -2,7 +2,7 @@
 FROM wiiuenv/devkitppc:20220605 AS final
 
 ENV openssl_ver=1.1.1p \
- curl_ver=7.83.1 \
+ curl_ver=7.84.0 \
  PATH=$DEVKITPPC/bin:$PATH \
  WUT_ROOT=$DEVKITPRO/wut
 WORKDIR /
