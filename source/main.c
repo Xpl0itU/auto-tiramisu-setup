@@ -1,8 +1,6 @@
 #include <curl/curl.h>
-#include <nsysnet/_socket.h>
-#include <netinet/tcp.h>
 
-#include <coreinit/launch.h>
+#include <sysapp/launch.h>
 
 #include <whb/proc.h>
 #include <whb/log.h>
@@ -19,7 +17,6 @@
 #include "zip/zip.h"
 
 #define ARRAY_LENGTH(array) (sizeof((array)) / sizeof((array)[0]))
-#define IO_BUFSIZE	(128 * 1024) // 128 KB
 
 const char *skip_file_list[] =
 {
@@ -29,52 +26,6 @@ const char *skip_file_list[] =
     "screen1.png",
     "screen2.png"
 };
-
-
-static int initSocket(void *ptr, curl_socket_t socket, curlsocktype type)
-{
-	int o = 1;
-
-	// Activate WinScale
-	int r = setsockopt(socket, SOL_SOCKET, SO_WINSCALE, &o, sizeof(o));
-	if(r != 0)
-		return CURL_SOCKOPT_ERROR;
-
-	//Activate TCP SAck
-	r = setsockopt(socket, SOL_SOCKET, SO_TCPSACK, &o, sizeof(o));
-	if(r != 0)
-		return CURL_SOCKOPT_ERROR;
-
-	// Activate TCP nodelay - libCURL default
-	r = setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, &o, sizeof(o));
-	if(r != 0)
-		return CURL_SOCKOPT_ERROR;
-
-	// Disable slowstart. Should be more important fo a server but doesn't hurt a client, too
-	r = setsockopt(socket, SOL_SOCKET, 0x4000, &o, sizeof(o));
-	if(r != 0)
-		return CURL_SOCKOPT_ERROR;
-
-	// Activate userspace buffer (fom our socket optimizer)
-	r = setsockopt(socket, SOL_SOCKET, 0x10000, &o, sizeof(o));
-	if(r != 0)
-		return CURL_SOCKOPT_ERROR;
-
-	o = 0;
-	// Disable TCP keepalive - libCURL default
-	r = setsockopt(socket, SOL_SOCKET, SO_KEEPALIVE, &o, sizeof(o));
-	if(r != 0)
-		return CURL_SOCKOPT_ERROR;
-
-	o = IO_BUFSIZE;
-
-	// Set receive buffersize
-	r = setsockopt(socket, SOL_SOCKET, SO_RCVBUF, &o, sizeof(o));
-	if(r != 0)
-		return CURL_SOCKOPT_ERROR;
-
-	return CURL_SOCKOPT_OK;
-}
 
 static size_t writefunction(void *ptr, size_t size, size_t nmemb, void *stream)
 {
@@ -137,9 +88,6 @@ int downloadFile(const char* url, const char* path, const char* cert) {
         curl_global_cleanup();
         return 1;
     }
-
-    // Enable optimizations
-    curl_easy_setopt(curl, CURLOPT_SOCKOPTFUNCTION, initSocket);
 
     // Use the certificate bundle in the romfs
     curl_easy_setopt(curl, CURLOPT_CAINFO, cert);
@@ -262,7 +210,7 @@ done: ;
     WHBLogConsoleFree();
     WHBProcShutdown();
 
-    OSForceFullRelaunch();
+    SYSLaunchMenu();
 
     return 0;
 }
