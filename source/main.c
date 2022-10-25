@@ -15,6 +15,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "state.h"
+
 #include "kernel.h"
 #include "zip/zip.h"
 
@@ -195,6 +197,7 @@ int main()
 {
     // Initialize ProcUI
     WHBProcInit();
+    initState();
 
     // Initialize a log console
     WHBLogConsoleInit();
@@ -209,7 +212,7 @@ int main()
     WHBLogPrintf("Downloading Tiramisu...");
     WHBLogConsoleDraw();
 
-    if(downloadFile("https://tiramisu.foryour.cafe/api/download?packages=environmentloader,wiiu-nanddumper-payload,payloadloaderinstaller,tiramisu,bloopair", "/vol/external01/tiramisu.zip", "romfs:/foryour-cafe.pem") == 1) {
+    if(downloadFile("https://github.com/wiiu-env/Tiramisu/releases/download/v0.1/environmentloader-7194938+wiiu-nanddumper-payload-5c5ec09+fw_img_loader-c2da326+payloadloaderinstaller-98367a9+tiramisu-7b881d3.zip", "/vol/external01/tiramisu.zip", "romfs:/foryour-cafe.pem") == 1) {
         WHBLogPrintf("Error while downloading Tiramisu");
         WHBLogConsoleDraw();
         goto done;
@@ -269,11 +272,12 @@ done: ;
     WHBLogConsoleDraw();
 
     // Wait until the user exits the application
-    while (WHBProcIsRunning()) { }
+    while (AppRunning()) { }
 
     romfsExit();
     WHBLogConsoleFree();
-    WHBProcShutdown();
+    shutdownState();
+    ProcUIShutdown();
 
     revertMainHook();
 
