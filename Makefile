@@ -38,7 +38,7 @@ CXXFLAGS	:= $(CFLAGS)
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-g $(ARCH) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lcurl -lssl -lcrypto -lz -lwut
+LIBS	:= -lcurl -lmbedtls -lmbedx509 -lmbedcrypto -lz -lwut
 
 include $(PORTLIBS_PATH)/wiiu/share/romfs-wiiu.mk
 CFLAGS		+=	$(ROMFS_CFLAGS)

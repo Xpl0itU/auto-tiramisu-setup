@@ -1,5 +1,6 @@
 #include <curl/curl.h>
 
+#include <coreinit/memheap.h>
 #include <sysapp/launch.h>
 
 #include <whb/proc.h>
@@ -28,6 +29,13 @@ const char *skip_file_list[] =
     "screen1.png",
     "screen2.png"
 };
+
+void __init_wut_malloc();
+
+// Initialize correct heaps for CustomRPXLoader
+void __preinit_user(MEMHeapHandle *outMem1, MEMHeapHandle *outFG, MEMHeapHandle *outMem2) {
+    __init_wut_malloc();
+}
 
 static int initSocket(void *ptr, curl_socket_t socket, curlsocktype type)
 {
