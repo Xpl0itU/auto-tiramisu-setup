@@ -1,4 +1,5 @@
 #include "state.h"
+#include <coreinit/launch.h>
 
 typedef enum {
     APP_STATE_STOPPING = 0,
@@ -54,6 +55,7 @@ void initState() {
 }
 
 void shutdownState() {
+    OSForceFullRelaunch();
     SYSLaunchMenu();
     while (app != APP_STATE_STOPPED) {
         AppRunning();
