@@ -35,10 +35,10 @@ const char *skip_file_list[] = {
 
 static int cursorPos = 0;
 
-void __init_wut_malloc();
+extern "C" void __init_wut_malloc();
 
 // Initialize correct heaps for CustomRPXLoader
-void __preinit_user(MEMHeapHandle *outMem1, MEMHeapHandle *outFG, MEMHeapHandle *outMem2) {
+extern "C" void __preinit_user(MEMHeapHandle *outMem1, MEMHeapHandle *outFG, MEMHeapHandle *outMem2) {
     __init_wut_malloc();
 }
 
