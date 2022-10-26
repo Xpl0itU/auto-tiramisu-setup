@@ -42,6 +42,11 @@ void __preinit_user(MEMHeapHandle *outMem1, MEMHeapHandle *outFG, MEMHeapHandle 
     __init_wut_malloc();
 }
 
+static inline void drawToScreen(const char* text) {
+    WHBLogPrint(text);
+    WHBLogConsoleDraw();
+}
+
 static int initSocket(void *ptr, curl_socket_t socket, curlsocktype type) {
 	int o = 1;
 
@@ -137,7 +142,7 @@ static int downloadFile(const char* url, const char* path, const char* cert) {
     // Start a curl session
     CURL* curl = curl_easy_init();
     if (!curl) {
-        WHBLogPrint("curl_easy_init: failed");
+        drawToScreen("curl_easy_init: failed");
         curl_global_cleanup();
         return 1;
     }
@@ -157,8 +162,7 @@ static int downloadFile(const char* url, const char* path, const char* cert) {
     // Set the download URL
     curl_easy_setopt(curl, CURLOPT_URL, url);
 
-    WHBLogPrint("Starting download...");
-    WHBLogConsoleDraw();
+    drawToScreen("Starting download...");
 
     // Perform the download
     FILE *file = fopen(path, "wb");
@@ -166,8 +170,7 @@ static int downloadFile(const char* url, const char* path, const char* cert) {
         // write the page body to this file handle
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
 
-        WHBLogPrint("Writing...");
-        WHBLogConsoleDraw();
+        drawToScreen("Writing...");
         // get it!
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
@@ -185,10 +188,9 @@ static int downloadFile(const char* url, const char* path, const char* cert) {
     return 0;
 }
 
-static void drawHeader() {
+static inline void drawHeader() {
     WHBLogPrint("Automatic Wii U Homebrew Setup");
-    WHBLogPrint("");
-    WHBLogConsoleDraw();
+    drawToScreen("");
 }
 
 #define NUM_LINES (16)
@@ -225,117 +227,93 @@ int main() {
     }
 
     if(cursorPos == 0) {
-        WHBLogPrint("Downloading Tiramisu...");
-        WHBLogConsoleDraw();
+        drawToScreen("Downloading Tiramisu...");
 
         if(downloadFile("https://github.com/wiiu-env/Tiramisu/releases/download/v0.1/environmentloader-7194938+wiiu-nanddumper-payload-5c5ec09+fw_img_loader-c2da326+payloadloaderinstaller-98367a9+tiramisu-7b881d3.zip", "/vol/external01/tiramisu.zip", "romfs:/github-com.pem") == 1) {
-            WHBLogPrint("Error while downloading Tiramisu");
-            WHBLogConsoleDraw();
+            drawToScreen("Error while downloading Tiramisu");
             goto done;
         }
         
-        WHBLogPrint("Extracting Tiramisu...");
-        WHBLogConsoleDraw();
+        drawToScreen("Extracting Tiramisu...");
 
         extract_package("/vol/external01/tiramisu.zip");
 
-        WHBLogPrint("Downloading Sigpatches...");
-        WHBLogConsoleDraw();
+        drawToScreen("Downloading Sigpatches...");
 
         if(downloadFile("https://github.com/marco-calautti/SigpatchesModuleWiiU/releases/latest/download/01_sigpatches.rpx", "/vol/external01/wiiu/environments/tiramisu/modules/setup/01_sigpatches.rpx", "romfs:/github-com.pem") == 1) {
-            WHBLogPrint("Error while downloading Sigpatches");
-            WHBLogConsoleDraw();
+            drawToScreen("Error while downloading Sigpatches");
             goto done;
         }
 
-        WHBLogPrint("Downloading Homebrew App Store...");
-        WHBLogConsoleDraw();
+        drawToScreen("Downloading Homebrew App Store...");
 
         if(downloadFile("http://wiiubru.com/appstore/zips/appstore.zip", "/vol/external01/appstore.zip", "romfs:/wiiubru-com.pem") == 1) {
-            WHBLogPrint("Error while downloading Homebrew App Store");
-            WHBLogConsoleDraw();
+            drawToScreen("Error while downloading Homebrew App Store");
             goto done;
         }
         
-        WHBLogPrint("Extracting Homebrew App Store...");
-        WHBLogConsoleDraw();
+        drawToScreen("Extracting Homebrew App Store...");
 
         extract_package("/vol/external01/appstore.zip");
 
-        WHBLogPrintf("Downloading SaveMii Mod WUT Port...");
-        WHBLogConsoleDraw();
+        drawToScreen("Downloading SaveMii Mod WUT Port...");
 
         if(downloadFile("https://wiiubru.com/appstore/zips/SaveMiiModWUTPort.zip", "/vol/external01/savemii.zip", "romfs:/wiiubru-com.pem") == 1) {
-            WHBLogPrint("Error while downloading SaveMii Mod WUT Port");
-            WHBLogConsoleDraw();
+            drawToScreen("Error while downloading SaveMii Mod WUT Port");
             goto done;
         }
         
-        WHBLogPrint("Extracting SaveMii Mod WUT Port...");
-        WHBLogConsoleDraw();
+        drawToScreen("Extracting SaveMii Mod WUT Port...");
 
         extract_package("/vol/external01/savemii.zip");
 
-        WHBLogPrint("Cleaning files...");
-        WHBLogConsoleDraw();
+        drawToScreen("Cleaning files...");
 
         remove("/vol/external01/tiramisu.zip");
         remove("/vol/external01/appstore.zip");
         remove("/vol/external01/savemii.zip");
     } else if(cursorPos == 1) {
-        WHBLogPrint("Downloading Tiramisu...");
-        WHBLogConsoleDraw();
+        drawToScreen("Downloading Tiramisu...");
 
         if(downloadFile("https://github.com/wiiu-env/Tiramisu/releases/download/v0.1/environmentloader-7194938+wiiu-nanddumper-payload-5c5ec09+fw_img_loader-c2da326+payloadloaderinstaller-98367a9+tiramisu-7b881d3.zip", "/vol/external01/tiramisu.zip", "romfs:/github-com.pem") == 1) {
-            WHBLogPrint("Error while downloading Tiramisu");
-            WHBLogConsoleDraw();
+            drawToScreen("Error while downloading Tiramisu");
             goto done;
         }
         
-        WHBLogPrint("Extracting Tiramisu...");
-        WHBLogConsoleDraw();
+        drawToScreen("Extracting Tiramisu...");
 
         extract_package("/vol/external01/tiramisu.zip");
 
-        WHBLogPrint("Downloading compat-installer...");
-        WHBLogConsoleDraw();
+        drawToScreen("Downloading compat-installer...");
 
         if(downloadFile("https://github.com/Xpl0itU/vwii-compat-installer/releases/download/v1.2/compat_installer.rpx", "/vol/external01/wiiu/apps/compat-installer.rpx", "romfs:/github-com.pem") == 1) {
-            WHBLogPrint("Error while downloading compat-installer");
-            WHBLogConsoleDraw();
+            drawToScreen("Error while downloading compat-installer");
             goto done;
         }
 
-        WHBLogPrint("Downloading Patched IOS 80 Installer for vWii...");
-        WHBLogConsoleDraw();
+        drawToScreen("Downloading Patched IOS 80 Installer for vWii...");
 
         if(downloadFile("https://wiiu.hacks.guide/docs/files/Patched_IOS80_Installer_for_vWii.zip", "/vol/external01/Patched_IOS80_Installer_for_vWii.zip", "romfs:/wiiu-hacks-guide.pem") == 1) {
-            WHBLogPrint("Error while downloading Patched IOS 80 Installer for vWii");
-            WHBLogConsoleDraw();
+            drawToScreen("Error while downloading Patched IOS 80 Installer for vWii");
             goto done;
         }
         
-        WHBLogPrint("Extracting Patched IOS 80 Installer for vWii...");
-        WHBLogConsoleDraw();
+        drawToScreen("Extracting Patched IOS 80 Installer for vWii...");
 
         extract_package("/vol/external01/Patched_IOS80_Installer_for_vWii.zip");
 
-        WHBLogPrint("Downloading d2x cIOS Installer...");
-        WHBLogConsoleDraw();
+        drawToScreen("Downloading d2x cIOS Installer...");
 
         if(downloadFile("https://wiiu.hacks.guide/docs/files/d2x_cIOS_Installer.zip", "/vol/external01/d2x_cIOS_Installer.zip", "romfs:/wiiu-hacks-guide.pem") == 1) {
-            WHBLogPrint("Error while downloading d2x cIOS Installer");
-            WHBLogConsoleDraw();
+            drawToScreen("Error while downloading d2x cIOS Installer");
             goto done;
         }
         
-        WHBLogPrint("Extracting d2x cIOS Installer...");
-        WHBLogConsoleDraw();
+        drawToScreen("Extracting d2x cIOS Installer...");
 
         extract_package("/vol/external01/d2x_cIOS_Installer.zip");
 
-        WHBLogPrint("Cleaning files...");
-        WHBLogConsoleDraw();
+        drawToScreen("Cleaning files...");
 
         remove("/vol/external01/tiramisu.zip");
         remove("/vol/external01/Patched_IOS80_Installer_for_vWii.zip");
@@ -344,8 +322,7 @@ int main() {
 
 done: ;
     WHBLogPrint("");
-    WHBLogPrint("Done, press HOME to exit");
-    WHBLogConsoleDraw();
+    drawToScreen("Done, press HOME to exit");
 
     // Wait until the user exits the application
     while (AppRunning()) { }
