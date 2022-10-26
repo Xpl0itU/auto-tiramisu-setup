@@ -224,11 +224,11 @@ int main()
     romfsInit();
     Input input;
     while (AppRunning()) {
-        input.read()
+        input.read();
         clearScreen();
         drawHeader();
-        WHBLogPrintf("%s Download Tiramisu", cursorPos == 0 ? "->");
-        WHBLogPrintf("%s Download vWii Homebrew files", cursorPos == 1 ? "->");
+        WHBLogPrintf("%s Download Tiramisu", cursorPos == 0 ? "->" : "");
+        WHBLogPrintf("%s Download vWii Homebrew files", cursorPos == 1 ? "->" : "");
         WHBLogConsoleDraw();
         if(input.get(TRIGGER, PAD_BUTTON_DOWN) && cursorPos != 1)
             cursorPos++;
