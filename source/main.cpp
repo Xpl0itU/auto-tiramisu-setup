@@ -227,8 +227,8 @@ int main()
         input.read();
         clearScreen();
         drawHeader();
-        WHBLogPrintf("%s Download Tiramisu", cursorPos == 0 ? ">" : " ");
-        WHBLogPrintf("%s Download vWii Homebrew files", cursorPos == 1 ? ">" : " ");
+        WHBLogPrintf("%c Download Tiramisu", cursorPos == 0 ? '>' : ' ');
+        WHBLogPrintf("%c Download vWii Homebrew files", cursorPos == 1 ? '>' : ' ');
         WHBLogConsoleDraw();
         if(input.get(TRIGGER, PAD_BUTTON_DOWN) && cursorPos != 1)
             cursorPos++;
