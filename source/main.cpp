@@ -90,7 +90,7 @@ static size_t writefunction(void *ptr, size_t size, size_t nmemb, void *stream) 
     return written;
 }
 
-int make_file_path(const char* name) {
+static int make_file_path(const char* name) {
 	int err = 0;
 	char *_name = strdup(name), *p;
 	for (p = strchr(_name + 1, '/'); p; p = strchr(p + 1, '/')) {
@@ -105,7 +105,7 @@ int make_file_path(const char* name) {
 	return !err;
 }
 
-void extract_package(const char *path) {
+static void extract_package(const char *path) {
 	struct zip_t *zip = zip_open(path, 0, 'r');
 	for (int i = 0; i < zip_total_entries(zip); i++) {
 		zip_entry_openbyindex(zip, i);
@@ -127,7 +127,7 @@ void extract_package(const char *path) {
 	zip_close(zip);
 }
 
-int downloadFile(const char* url, const char* path, const char* cert) {
+static int downloadFile(const char* url, const char* path, const char* cert) {
     CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
     if (res != CURLE_OK) {
         WHBLogPrintf("curl_global_init: %d", res);
@@ -193,14 +193,12 @@ static void drawHeader() {
 
 #define NUM_LINES (16)
 
-void clearScreen() {
-    for (int i = 0; i < NUM_LINES; i++) {
+static void clearScreen() {
+    for (int i = 0; i < NUM_LINES; i++)
         WHBLogPrint("");
-    }
 }
 
-int main()
-{
+int main() {
     // Initialize ProcUI
     WHBProcInit();
     initState();
