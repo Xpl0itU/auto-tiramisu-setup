@@ -212,7 +212,7 @@ int main()
     WHBLogPrintf("Downloading Tiramisu...");
     WHBLogConsoleDraw();
 
-    if(downloadFile("https://github.com/wiiu-env/Tiramisu/releases/download/v0.1/environmentloader-7194938+wiiu-nanddumper-payload-5c5ec09+fw_img_loader-c2da326+payloadloaderinstaller-98367a9+tiramisu-7b881d3.zip", "/vol/external01/tiramisu.zip", "romfs:/foryour-cafe.pem") == 1) {
+    if(downloadFile("https://github.com/wiiu-env/Tiramisu/releases/download/v0.1/environmentloader-7194938+wiiu-nanddumper-payload-5c5ec09+fw_img_loader-c2da326+payloadloaderinstaller-98367a9+tiramisu-7b881d3.zip", "/vol/external01/tiramisu.zip", "romfs:/github.pem") == 1) {
         WHBLogPrintf("Error while downloading Tiramisu");
         WHBLogConsoleDraw();
         goto done;
