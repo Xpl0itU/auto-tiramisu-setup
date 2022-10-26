@@ -190,7 +190,7 @@ static int downloadFile(const char* url, const char* path, const char* cert) {
 
 static inline void drawHeader() {
     WHBLogPrint("Automatic Wii U Homebrew Setup");
-    drawToScreen("");
+    WHBLogPrint("");
 }
 
 #define NUM_LINES (16)
@@ -226,7 +226,7 @@ int main() {
             break;
     }
 
-    if(cursorPos == 0) {
+    if((cursorPos == 0) && input.get(TRIGGER, PAD_BUTTON_A)) {
         drawToScreen("Downloading Tiramisu...");
 
         if(downloadFile("https://github.com/wiiu-env/Tiramisu/releases/download/v0.1/environmentloader-7194938+wiiu-nanddumper-payload-5c5ec09+fw_img_loader-c2da326+payloadloaderinstaller-98367a9+tiramisu-7b881d3.zip", "/vol/external01/tiramisu.zip", "romfs:/github-com.pem") == 1) {
@@ -272,7 +272,7 @@ int main() {
         remove("/vol/external01/tiramisu.zip");
         remove("/vol/external01/appstore.zip");
         remove("/vol/external01/savemii.zip");
-    } else if(cursorPos == 1) {
+    } else if((cursorPos == 1) && input.get(TRIGGER, PAD_BUTTON_A)) {
         drawToScreen("Downloading Tiramisu...");
 
         if(downloadFile("https://github.com/wiiu-env/Tiramisu/releases/download/v0.1/environmentloader-7194938+wiiu-nanddumper-payload-5c5ec09+fw_img_loader-c2da326+payloadloaderinstaller-98367a9+tiramisu-7b881d3.zip", "/vol/external01/tiramisu.zip", "romfs:/github-com.pem") == 1) {
