@@ -24,8 +24,7 @@
 #define ARRAY_LENGTH(array) (sizeof((array)) / sizeof((array)[0]))
 #define IO_BUFSIZE	(128 * 1024) // 128 KB
 
-const char *skip_file_list[] =
-{
+const char *skip_file_list[] = {
 	"manifest.install",
 	"info.json",
     "versions.json",
@@ -43,30 +42,26 @@ void __preinit_user(MEMHeapHandle *outMem1, MEMHeapHandle *outFG, MEMHeapHandle 
     __init_wut_malloc();
 }
 
-static int initSocket(void *ptr, curl_socket_t socket, curlsocktype type)
-{
+static int initSocket(void *ptr, curl_socket_t socket, curlsocktype type) {
 	int o = 1;
 
 	// Activate WinScale
 	int r = setsockopt(socket, SOL_SOCKET, SO_WINSCALE, &o, sizeof(o));
-	if(r != 0)
-	{
+	if(r != 0) {
 		WHBLogPrintf("initSocket: Error setting WinScale: %d", r);
 		return CURL_SOCKOPT_ERROR;
 	}
 
 	//Activate TCP SAck
 	r = setsockopt(socket, SOL_SOCKET, SO_TCPSACK, &o, sizeof(o));
-	if(r != 0)
-	{
+	if(r != 0) {
 		WHBLogPrintf("initSocket: Error setting TCP SAck: %d", r);
 		return CURL_SOCKOPT_ERROR;
 	}
 
 	// Disable slowstart. Should be more important fo a server but doesn't hurt a client, too
 	r = setsockopt(socket, SOL_SOCKET, 0x4000, &o, sizeof(o));
-	if(r != 0)
-	{
+	if(r != 0) {
 		WHBLogPrintf("initSocket: Error setting Noslowstart: %d", r);
 		return CURL_SOCKOPT_ERROR;
 	}
@@ -74,8 +69,7 @@ static int initSocket(void *ptr, curl_socket_t socket, curlsocktype type)
 	o = 0;
 	// Disable TCP keepalive - libCURL default
 	r = setsockopt(socket, SOL_SOCKET, SO_KEEPALIVE, &o, sizeof(o));
-	if(r != 0)
-	{
+	if(r != 0) {
 		WHBLogPrintf("initSocket: Error setting TCP nodelay: %d", r);
 		return CURL_SOCKOPT_ERROR;
 	}
@@ -83,8 +77,7 @@ static int initSocket(void *ptr, curl_socket_t socket, curlsocktype type)
 	o = IO_BUFSIZE;
 	// Set receive buffersize
 	r = setsockopt(socket, SOL_SOCKET, SO_RCVBUF, &o, sizeof(o));
-	if(r != 0)
-	{
+	if(r != 0) {
 		WHBLogPrintf("initSocket: Error setting RBS: %d", r);
 		return CURL_SOCKOPT_ERROR;
 	}
@@ -92,18 +85,15 @@ static int initSocket(void *ptr, curl_socket_t socket, curlsocktype type)
 	return CURL_SOCKOPT_OK;
 }
 
-static size_t writefunction(void *ptr, size_t size, size_t nmemb, void *stream)
-{
-  size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
-  return written;
+static size_t writefunction(void *ptr, size_t size, size_t nmemb, void *stream) {
+    size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
+    return written;
 }
 
-int make_file_path(const char* name)
-{
+int make_file_path(const char* name) {
 	int err = 0;
 	char *_name = strdup(name), *p;
-	for (p = strchr(_name+1, '/'); p; p = strchr(p+1, '/'))
-	{
+	for (p = strchr(_name + 1, '/'); p; p = strchr(p + 1, '/')) {
 		*p = '\0';
 		err = mkdir(_name, 0775) == -1;
 		err = err && (errno != EEXIST);
@@ -115,11 +105,9 @@ int make_file_path(const char* name)
 	return !err;
 }
 
-void extract_package(const char *path)
-{
+void extract_package(const char *path) {
 	struct zip_t *zip = zip_open(path, 0, 'r');
-	for (int i = 0; i < zip_total_entries(zip); i++)
-	{
+	for (int i = 0; i < zip_total_entries(zip); i++) {
 		zip_entry_openbyindex(zip, i);
 		
 		// get file name
@@ -149,7 +137,7 @@ int downloadFile(const char* url, const char* path, const char* cert) {
     // Start a curl session
     CURL* curl = curl_easy_init();
     if (!curl) {
-        WHBLogPrintf("curl_easy_init: failed");
+        WHBLogPrint("curl_easy_init: failed");
         curl_global_cleanup();
         return 1;
     }
@@ -169,25 +157,25 @@ int downloadFile(const char* url, const char* path, const char* cert) {
     // Set the download URL
     curl_easy_setopt(curl, CURLOPT_URL, url);
 
-    WHBLogPrintf("Starting download...");
+    WHBLogPrint("Starting download...");
     WHBLogConsoleDraw();
 
     // Perform the download
     FILE *file = fopen(path, "wb");
     if(file) {
-        /* write the page body to this file handle */
+        // write the page body to this file handle
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
 
-        WHBLogPrintf("Writing...");
+        WHBLogPrint("Writing...");
         WHBLogConsoleDraw();
-        /* get it! */
+        // get it!
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
             WHBLogPrintf("curl_easy_perform: %d", res);
             return 1;
         }
 
-        /* close the header file */
+        // close the header file
         fclose(file);
     }
 
@@ -198,15 +186,15 @@ int downloadFile(const char* url, const char* path, const char* cert) {
 }
 
 static void drawHeader() {
-    WHBLogPrintf("Automatic Wii U Homebrew Setup");
-    WHBLogPrintf("");
+    WHBLogPrint("Automatic Wii U Homebrew Setup");
+    WHBLogPrint("");
     WHBLogConsoleDraw();
 }
 
 #define NUM_LINES (16)
 
 void clearScreen() {
-    for (int i=0; i<NUM_LINES; i++) {
+    for (int i = 0; i < NUM_LINES; i++) {
         WHBLogPrint("");
     }
 }
