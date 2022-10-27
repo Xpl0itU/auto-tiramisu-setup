@@ -24,8 +24,8 @@
 #define ARRAY_LENGTH(array) (sizeof((array)) / sizeof((array)[0]))
 #define IO_BUFSIZE          (128 * 1024) // 128 KB
 
-#define MAX_FILENAME 256
-#define READ_SIZE 8192
+#define MAX_FILENAME        256
+#define READ_SIZE           8192
 
 const char *skip_file_list[] = {"manifest.install", "info.json",
                                 "versions.json", "screen1.png",
