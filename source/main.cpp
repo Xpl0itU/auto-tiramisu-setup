@@ -378,7 +378,7 @@ int main() {
         drawToScreen("Downloading Payloads...");
 
         char url[1024];
-        sprintf(url, "https://aroma.foryour.cafe/api/download?packages=environmentloader%s%s", nandDumperSelected ? "wiiu-nanddumper-payload" : "", fwimgloaderSelected ? ",fw_img_loader" : "");
+        sprintf(url, "https://aroma.foryour.cafe/api/download?packages=environmentloader%s%s", nandDumperSelected ? ",wiiu-nanddumper-payload" : "", fwimgloaderSelected ? ",fw_img_loader" : "");
 
         if(downloadFile(url, "/vol/external01/payloads.zip", "romfs:/foryour-cafe.pem") == 1) {
             drawToScreen("Error while downloading Payloads");
