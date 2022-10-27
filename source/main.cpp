@@ -217,8 +217,9 @@ int main() {
         drawHeader();
         WHBLogPrintf("%c Download Tiramisu", cursorPos == 0 ? '>' : ' ');
         WHBLogPrintf("%c Download vWii Homebrew files", cursorPos == 1 ? '>' : ' ');
+        WHBLogPrintf("%c Download Aroma", cursorPos == 2 ? '>' : ' ');
         WHBLogConsoleDraw();
-        if(input.get(TRIGGER, PAD_BUTTON_DOWN) && cursorPos != 1)
+        if(input.get(TRIGGER, PAD_BUTTON_DOWN) && cursorPos != 2)
             cursorPos++;
         if(input.get(TRIGGER, PAD_BUTTON_UP) && cursorPos != 0)
             cursorPos--;
@@ -318,6 +319,136 @@ int main() {
         remove("/vol/external01/tiramisu.zip");
         remove("/vol/external01/Patched_IOS80_Installer_for_vWii.zip");
         remove("/vol/external01/d2x_cIOS_Installer.zip");
+    } else if((cursorPos == 2) && input.get(TRIGGER, PAD_BUTTON_A)) {
+        bool nandDumperSelected = false, fwimgloaderSelected = false;
+        bool bloopairSelected = false, wiiloadSelected = false;
+        bool ftpiiuSelected = false, sdcafiineSelected = false;
+        bool usbSerialLoggingSelected = false;
+        while (AppRunning()) {
+            input.read();
+            clearScreen();
+
+            // Payloads
+            WHBLogPrintf("%c [%c] Nanddumper", cursorPos == 0 ? '>' : ' ', nandDumperSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] fw.img loader", cursorPos == 1 ? '>' : ' ', fwimgloaderSelected ? 'x' : ' ');
+            
+            // Plugins and modules
+            WHBLogPrintf("%c [%c] Bloopair", cursorPos == 2 ? '>' : ' ', bloopairSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] Wiiload Plugin", cursorPos == 3 ? '>' : ' ', wiiloadSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] FTPiiU Plugin", cursorPos == 4 ? '>' : ' ', ftpiiuSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] SDCafiine Plugin", cursorPos == 5 ? '>' : ' ', sdcafiineSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] USB Serial logging", cursorPos == 6 ? '>' : ' ', usbSerialLoggingSelected ? 'x' : ' ');
+            
+            drawToScreen("(A) Select (+) Start Download");
+            
+            if(input.get(TRIGGER, PAD_BUTTON_DOWN) && cursorPos != 6)
+                cursorPos++;
+            if(input.get(TRIGGER, PAD_BUTTON_UP) && cursorPos != 0)
+                cursorPos--;
+            if(input.get(TRIGGER, PAD_BUTTON_A)) {
+                switch (cursorPos) {
+                    case 0:
+                        nandDumperSelected = !nandDumperSelected;
+                        break;
+                    case 1:
+                        fwimgloaderSelected = !fwimgloaderSelected;
+                        break;
+                    case 2:
+                        bloopairSelected = !bloopairSelected;
+                        break;
+                    case 3:
+                        wiiloadSelected = !wiiloadSelected;
+                        break;
+                    case 4:
+                        ftpiiuSelected = !ftpiiuSelected;
+                        break;
+                    case 5:
+                        sdcafiineSelected = !sdcafiineSelected;
+                        break;
+                    case 6:
+                        usbSerialLoggingSelected = !usbSerialLoggingSelected;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if(input.get(TRIGGER, PAD_BUTTON_PLUS))
+                break;
+        }
+        drawToScreen("Downloading Payloads...");
+
+        char url[1024];
+        sprintf(url, "https://aroma.foryour.cafe/api/download?packages=environmentloader%s%s", nandDumperSelected ? "wiiu-nanddumper-payload" : "", fwimgloaderSelected ? ",fw_img_loader" : "");
+
+        if(downloadFile(url, "/vol/external01/payloads.zip", "romfs:/foryour-cafe.pem") == 1) {
+            drawToScreen("Error while downloading Payloads");
+            goto done;
+        }
+        
+        drawToScreen("Extracting Payloads...");
+
+        extract_package("/vol/external01/payloads.zip");
+
+        drawToScreen("Downloading Base Aroma...");
+
+        if(downloadFile("https://aroma.foryour.cafe/api/download?packages=base-aroma", "/vol/external01/base.zip", "romfs:/foryour-cafe.pem") == 1) {
+            drawToScreen("Error while downloading Base Aroma");
+            goto done;
+        }
+        
+        drawToScreen("Extracting Base Aroma...");
+
+        extract_package("/vol/external01/base.zip");
+
+        drawToScreen("Downloading Plugins and Modules...");
+
+        sprintf(url, "https://aroma.foryour.cafe/api/download?packages=%s%s%s%s%s", bloopairSelected ? "bloopair" : "", wiiloadSelected ? ",wiiload" : "", ftpiiuSelected ? ",ftpiiu" : "", sdcafiineSelected ? ",sdcafiine" : "", usbSerialLoggingSelected ? ",usbseriallogger" : "");
+
+        if(downloadFile(url, "/vol/external01/plugins.zip", "romfs:/foryour-cafe.pem") == 1) {
+            drawToScreen("Error while downloading Plugins and Modules");
+            goto done;
+        }
+        
+        drawToScreen("Extracting Plugins and Modules...");
+
+        extract_package("/vol/external01/plugins.zip");
+
+        drawToScreen("Downloading Sigpatches...");
+
+        if(downloadFile("https://github.com/marco-calautti/SigpatchesModuleWiiU/releases/latest/download/01_sigpatches.rpx", "/vol/external01/wiiu/environments/aroma/modules/setup/01_sigpatches.rpx", "romfs:/github-com.pem") == 1) {
+            drawToScreen("Error while downloading Sigpatches");
+            goto done;
+        }
+
+        drawToScreen("Downloading Homebrew App Store...");
+
+        if(downloadFile("http://wiiubru.com/appstore/zips/appstore.zip", "/vol/external01/appstore.zip", "romfs:/wiiubru-com.pem") == 1) {
+            drawToScreen("Error while downloading Homebrew App Store");
+            goto done;
+        }
+        
+        drawToScreen("Extracting Homebrew App Store...");
+
+        extract_package("/vol/external01/appstore.zip");
+
+        drawToScreen("Downloading SaveMii Mod WUT Port...");
+
+        if(downloadFile("https://wiiu.cdn.fortheusers.org/zips/SaveMiiModWUTPort-wuhb.zip", "/vol/external01/savemii.zip", "romfs:/wiiubru-com.pem") == 1) {
+            drawToScreen("Error while downloading SaveMii Mod WUT Port");
+            goto done;
+        }
+        
+        drawToScreen("Extracting SaveMii Mod WUT Port...");
+
+        extract_package("/vol/external01/savemii.zip");
+
+        drawToScreen("Cleaning files...");
+
+        remove("/vol/external01/payloads.zip");
+        remove("/vol/external01/base.zip");
+        remove("/vol/external01/plugins.zip");
+        remove("/vol/external01/appstore.zip");
+        remove("/vol/external01/savemii.zip");
     }
 
 done: ;

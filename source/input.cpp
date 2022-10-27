@@ -49,18 +49,6 @@ bool Input::get(ButtonState state, Button button) {
                 if (kpadClassicState & WPAD_CLASSIC_BUTTON_A) return true;
                 if (kpadProState & WPAD_PRO_BUTTON_A) return true;
                 break;
-            case PAD_BUTTON_B:
-                if (vpadState & VPAD_BUTTON_B) return true;
-                if (kpadState & WPAD_BUTTON_B) return true;
-                if (kpadClassicState & WPAD_CLASSIC_BUTTON_B) return true;
-                if (kpadProState & WPAD_PRO_BUTTON_B) return true;
-                break;
-            case PAD_BUTTON_X:
-                if (vpadState & VPAD_BUTTON_X) return true;
-                if (kpadState & WPAD_BUTTON_1) return true;
-                if (kpadClassicState & WPAD_CLASSIC_BUTTON_X) return true;
-                if (kpadProState & WPAD_PRO_BUTTON_X) return true;
-                break;
             case PAD_BUTTON_UP:
                 if (vpadState & VPAD_BUTTON_UP) return true;
                 if (vpadState & VPAD_STICK_L_EMULATION_UP) return true;
@@ -79,35 +67,11 @@ bool Input::get(ButtonState state, Button button) {
                 if (kpadProState & WPAD_PRO_BUTTON_DOWN) return true;
                 if (kpadProState & WPAD_PRO_STICK_L_EMULATION_DOWN) return true;
                 break;
-            case PAD_BUTTON_LEFT:
-                if (vpadState & VPAD_BUTTON_LEFT) return true;
-                if (vpadState & VPAD_STICK_L_EMULATION_LEFT) return true;
-                if (kpadState & WPAD_BUTTON_LEFT) return true;
-                if (kpadClassicState & WPAD_CLASSIC_BUTTON_LEFT) return true;
-                if (kpadClassicState & WPAD_CLASSIC_STICK_L_EMULATION_LEFT) return true;
-                if (kpadProState & WPAD_PRO_BUTTON_LEFT) return true;
-                if (kpadProState & WPAD_PRO_STICK_L_EMULATION_LEFT) return true;
-                break;
-            case PAD_BUTTON_RIGHT:
-                if (vpadState & VPAD_BUTTON_RIGHT) return true;
-                if (vpadState & VPAD_STICK_L_EMULATION_RIGHT) return true;
-                if (kpadState & WPAD_BUTTON_RIGHT) return true;
-                if (kpadClassicState & WPAD_CLASSIC_BUTTON_RIGHT) return true;
-                if (kpadClassicState & WPAD_CLASSIC_STICK_L_EMULATION_RIGHT) return true;
-                if (kpadProState & WPAD_PRO_BUTTON_RIGHT) return true;
-                if (kpadProState & WPAD_PRO_STICK_L_EMULATION_RIGHT) return true;
-                break;
-            case PAD_BUTTON_L:
-                if (vpadState & VPAD_BUTTON_L) return true;
-                if (kpadState & WPAD_BUTTON_MINUS) return true;
-                if (kpadClassicState & WPAD_CLASSIC_BUTTON_L) return true;
-                if (kpadProState & WPAD_PRO_TRIGGER_L) return true;
-                break;
-            case PAD_BUTTON_R:
-                if (vpadState & VPAD_BUTTON_R) return true;
+            case PAD_BUTTON_PLUS:
+                if (vpadState & VPAD_BUTTON_PLUS) return true;
                 if (kpadState & WPAD_BUTTON_PLUS) return true;
-                if (kpadClassicState & WPAD_CLASSIC_BUTTON_R) return true;
-                if (kpadProState & WPAD_PRO_TRIGGER_R) return true;
+                if (kpadClassicState & WPAD_CLASSIC_BUTTON_PLUS) return true;
+                if (kpadProState & WPAD_PRO_BUTTON_PLUS) return true;
                 break;
             case PAD_BUTTON_ANY:
                 if (vpadState) return true;
