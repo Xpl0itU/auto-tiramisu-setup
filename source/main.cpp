@@ -23,9 +23,7 @@
 
 #define ARRAY_LENGTH(array) (sizeof((array)) / sizeof((array)[0]))
 #define IO_BUFSIZE          (128 * 1024) // 128 KB
-
 #define MAX_FILENAME        256
-#define READ_SIZE           8192
 
 const char *skip_file_list[] = {"manifest.install", "info.json",
                                 "versions.json", "screen1.png",
@@ -121,7 +119,7 @@ static void extract_package(const char *path) {
         return;
     }
 
-    char read_buffer[READ_SIZE];
+    char read_buffer[IO_BUFSIZE];
 
     uLong i;
     for (i = 0; i < global_info.number_entry; ++i) {
@@ -151,7 +149,7 @@ static void extract_package(const char *path) {
 
             int error = UNZ_OK;
             do {
-                error = unzReadCurrentFile(zipfile, read_buffer, READ_SIZE);
+                error = unzReadCurrentFile(zipfile, read_buffer, IO_BUFSIZE);
                 if (error < 0) {
                     unzCloseCurrentFile(zipfile);
                     unzClose(zipfile);
