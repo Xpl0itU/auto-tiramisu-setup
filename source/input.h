@@ -12,11 +12,9 @@ typedef enum Button {
     PAD_BUTTON_ANY
 } Button;
 
-typedef enum ButtonState {
-    TRIGGER,
-    HOLD,
-    RELEASE
-} ButtonState;
+typedef enum ButtonState { TRIGGER,
+                           HOLD,
+                           RELEASE } ButtonState;
 
 class Input {
 public:

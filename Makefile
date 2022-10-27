@@ -20,7 +20,7 @@ include $(DEVKITPRO)/wut/share/wut_rules
 TARGET		:=	setup
 BUILD		:=	build
 SOURCES		:=	source \
-				source/zip
+				source/minizip
 DATA		:=	data
 INCLUDES	:=	include
 ROMFS 		:=	romfs
@@ -31,7 +31,7 @@ ROMFS 		:=	romfs
 CFLAGS	:=	-g -Wall -Ofast -ffunction-sections \
 			$(MACHDEP)
 
-CFLAGS	+=	$(INCLUDE) -D__WIIU__ -D__WUT__
+CFLAGS	+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DIOAPI_NO_64
 
 CXXFLAGS	:= $(CFLAGS)
 
