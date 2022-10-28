@@ -259,7 +259,7 @@ int main() {
 
         drawToScreen("Downloading SaveMii Mod WUT Port...");
 
-        if(downloadFile("https://wiiubru.com/appstore/zips/SaveMiiModWUTPort.zip", "/vol/external01/savemii.zip", "romfs:/wiiubru-com.pem") == 1) {
+        if(downloadFile("https://wiiu.cdn.fortheusers.org/zips/SaveMiiModWUTPort.zip", "/vol/external01/savemii.zip", "romfs:/wiiubru-com.pem") == 1) {
             drawToScreen("Error while downloading SaveMii Mod WUT Port");
             goto done;
         }
