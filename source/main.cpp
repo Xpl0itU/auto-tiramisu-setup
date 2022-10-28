@@ -324,6 +324,7 @@ int main() {
         bool bloopairSelected = false, wiiloadSelected = false;
         bool ftpiiuSelected = false, sdcafiineSelected = false;
         bool usbSerialLoggingSelected = false;
+        cursorPos = 0;
         while (AppRunning()) {
             input.read();
             clearScreen();
@@ -338,6 +339,8 @@ int main() {
             WHBLogPrintf("%c [%c] FTPiiU Plugin", cursorPos == 4 ? '>' : ' ', ftpiiuSelected ? 'x' : ' ');
             WHBLogPrintf("%c [%c] SDCafiine Plugin", cursorPos == 5 ? '>' : ' ', sdcafiineSelected ? 'x' : ' ');
             WHBLogPrintf("%c [%c] USB Serial logging", cursorPos == 6 ? '>' : ' ', usbSerialLoggingSelected ? 'x' : ' ');
+
+            WHBLogPrintf("");
             
             drawToScreen("(A) Select (+) Start Download");
             
