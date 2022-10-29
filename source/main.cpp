@@ -327,7 +327,7 @@ int main() {
 
         drawToScreen("Downloading SaveMii Mod WUT Port...");
 
-        if(downloadFile("https://wiiu.cdn.fortheusers.org/zips/SaveMiiModWUTPort.zip", "/vol/external01/savemii.zip", "romfs:/wiiubru-com.pem") == 1) {
+        if (downloadFile("https://wiiu.cdn.fortheusers.org/zips/SaveMiiModWUTPort.zip", "/vol/external01/savemii.zip", "romfs:/wiiubru-com.pem") == 1) {
             drawToScreen("Error while downloading SaveMii Mod WUT Port");
             goto done;
         }
@@ -425,7 +425,7 @@ int main() {
             WHBLogPrintf("%c [%c] USB Serial logging", cursorPos == 6 ? '>' : ' ', usbSerialLoggingSelected ? 'x' : ' ');
 
             WHBLogPrintf("");
-            
+
             drawToScreen("(A) Select (+) Start Download");
 
             if (input.get(TRIGGER, PAD_BUTTON_DOWN) && cursorPos != 6)
