@@ -9,17 +9,19 @@
 
 #include <romfs-wiiu.h>
 
+#include <dirent.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "input.h"
 #include "state.h"
 
 #include "kernel.h"
-#include "minizip/unzip.h"
+#include "miniz/miniz.h"
 
 #define ARRAY_LENGTH(array) (sizeof((array)) / sizeof((array)[0]))
 #define IO_BUFSIZE          (128 * 1024) // 128 KB
@@ -94,88 +96,98 @@ static size_t writefunction(void *ptr, size_t size, size_t nmemb,
     return written;
 }
 
-static int make_file_path(const char *name) {
-    int err = 0;
-    char *_name = strdup(name), *p;
-    for (p = strchr(_name + 1, '/'); p; p = strchr(p + 1, '/')) {
-        *p = '\0';
-        err = mkdir(_name, 0775) == -1;
-        err = err && (errno != EEXIST);
-        if (err)
-            break;
-        *p = '/';
+int mkdir_p(const char *dir, const mode_t mode) {
+    char tmp[MAX_FILENAME];
+    char *p = NULL;
+    struct stat sb;
+    size_t len;
+
+    /* copy path */
+    len = strnlen(dir, MAX_FILENAME);
+    if (len == 0 || len == MAX_FILENAME) {
+        return -1;
     }
-    free(_name);
-    return !err;
+    memcpy(tmp, dir, len);
+    tmp[len] = '\0';
+
+    /* remove trailing slash */
+    if (tmp[len - 1] == '/') {
+        tmp[len - 1] = '\0';
+    }
+
+    /* check if path exists and is a directory */
+    if (stat(tmp, &sb) == 0) {
+        if (S_ISDIR(sb.st_mode)) {
+            return 0;
+        }
+    }
+
+    /* recursive mkdir */
+    for (p = tmp + 1; *p; p++) {
+        if (*p == '/') {
+            *p = 0;
+            /* test path */
+            if (stat(tmp, &sb) != 0) {
+                /* path does not exist - create directory */
+                if (mkdir(tmp, mode) < 0) {
+                    return -1;
+                }
+            } else if (!S_ISDIR(sb.st_mode)) {
+                /* not a directory */
+                return -1;
+            }
+            *p = '/';
+        }
+    }
+    /* test path */
+    if (stat(tmp, &sb) != 0) {
+        /* path does not exist - create directory */
+        if (mkdir(tmp, mode) < 0) {
+            return -1;
+        }
+    } else if (!S_ISDIR(sb.st_mode)) {
+        /* not a directory */
+        return -1;
+    }
+    return 0;
 }
 
-static void extract_package(const char *path) {
-    unzFile zipfile = unzOpen(path);
-    if (zipfile == NULL)
-        return;
-    unz_global_info global_info;
-    if (unzGetGlobalInfo(zipfile, &global_info) != UNZ_OK) {
-        unzClose(zipfile);
-        return;
+int extract_package(const char *zipfile) {
+    mz_zip_archive zip;
+    memset(&zip, 0, sizeof(zip));
+    if (!mz_zip_reader_init_file(&zip, zipfile, 0)) {
+        WHBLogPrintf("Error opening zip file: %s\n", zipfile);
+        return -1;
     }
-
-    char read_buffer[IO_BUFSIZE];
-
-    uLong i;
-    for (i = 0; i < global_info.number_entry; ++i) {
-        unz_file_info file_info;
-        char filename[MAX_FILENAME];
-        if (unzGetCurrentFileInfo(zipfile, &file_info, filename, MAX_FILENAME, NULL,
-                                  0, NULL, 0) != UNZ_OK) {
-            unzClose(zipfile);
-            return;
+    for (int i = 0; i < (int) mz_zip_reader_get_num_files(&zip); i++) {
+        mz_zip_archive_file_stat file_stat;
+        if (!mz_zip_reader_file_stat(&zip, i, &file_stat)) {
+            WHBLogPrintf("Error reading zip file: %s\n", zipfile);
+            return -1;
         }
-
-        const size_t filename_length = strlen(filename);
-        if (filename[filename_length - 1] == '/') {
-            make_file_path(filename);
-        } else {
-            if (unzOpenCurrentFile(zipfile) != UNZ_OK) {
-                unzClose(zipfile);
-                return;
+        if (!mz_zip_reader_is_file_a_directory(&zip, i)) {
+            char *filename = (char *) malloc(strlen(file_stat.m_filename) + 1);
+            if (!filename) {
+                WHBLogPrintf("Error allocating filename\n");
+                return -1;
             }
-
-            FILE *out = fopen(filename, "wb");
-            if (out == NULL) {
-                unzCloseCurrentFile(zipfile);
-                unzClose(zipfile);
-                return;
+            sprintf(filename, "%s", file_stat.m_filename);
+            char *last = strrchr(filename, '/');
+            if (last) {
+                *last = '\0';
+                mkdir_p(filename, 0777);
+                *last = '/';
             }
-
-            int error = UNZ_OK;
-            do {
-                error = unzReadCurrentFile(zipfile, read_buffer, IO_BUFSIZE);
-                if (error < 0) {
-                    unzCloseCurrentFile(zipfile);
-                    unzClose(zipfile);
-                    return;
-                }
-
-                if (error > 0) {
-                    fwrite(read_buffer, error, 1,
-                           out);
-                }
-            } while (error > 0);
-
-            fclose(out);
-        }
-
-        unzCloseCurrentFile(zipfile);
-
-        if ((i + 1) < global_info.number_entry) {
-            if (unzGoToNextFile(zipfile) != UNZ_OK) {
-                unzClose(zipfile);
-                return;
+            if (!mz_zip_reader_extract_to_file(&zip, i, filename, 0)) {
+                WHBLogPrintf("Error extracting zip file: %s\n", zipfile);
+                free(filename);
+                return -1;
             }
+            free(filename);
         }
     }
-
-    unzClose(zipfile);
+    mz_zip_reader_end(&zip);
+    return 0;
 }
 
 static int downloadFile(const char *url, const char *path, const char *cert) {
@@ -287,7 +299,6 @@ int main() {
         }
 
         drawToScreen("Extracting Tiramisu...");
-
         extract_package("/vol/external01/tiramisu.zip");
 
         drawToScreen("Downloading Sigpatches...");
