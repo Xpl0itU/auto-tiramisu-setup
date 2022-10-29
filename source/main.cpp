@@ -327,9 +327,7 @@ int main() {
 
         drawToScreen("Downloading SaveMii Mod WUT Port...");
 
-        if (downloadFile("https://wiiubru.com/appstore/zips/SaveMiiModWUTPort.zip",
-                         "/vol/external01/savemii.zip",
-                         "romfs:/wiiubru-com.pem") == 1) {
+        if(downloadFile("https://wiiu.cdn.fortheusers.org/zips/SaveMiiModWUTPort.zip", "/vol/external01/savemii.zip", "romfs:/wiiubru-com.pem") == 1) {
             drawToScreen("Error while downloading SaveMii Mod WUT Port");
             goto done;
         }
@@ -408,6 +406,7 @@ int main() {
         bool bloopairSelected = false, wiiloadSelected = false;
         bool ftpiiuSelected = false, sdcafiineSelected = false;
         bool usbSerialLoggingSelected = false;
+        cursorPos = 0;
         while (AppRunning()) {
             input.read();
             clearScreen();
@@ -419,17 +418,14 @@ int main() {
                          fwimgloaderSelected ? 'x' : ' ');
 
             // Plugins and modules
-            WHBLogPrintf("%c [%c] Bloopair", cursorPos == 2 ? '>' : ' ',
-                         bloopairSelected ? 'x' : ' ');
-            WHBLogPrintf("%c [%c] Wiiload Plugin", cursorPos == 3 ? '>' : ' ',
-                         wiiloadSelected ? 'x' : ' ');
-            WHBLogPrintf("%c [%c] FTPiiU Plugin", cursorPos == 4 ? '>' : ' ',
-                         ftpiiuSelected ? 'x' : ' ');
-            WHBLogPrintf("%c [%c] SDCafiine Plugin", cursorPos == 5 ? '>' : ' ',
-                         sdcafiineSelected ? 'x' : ' ');
-            WHBLogPrintf("%c [%c] USB Serial logging", cursorPos == 6 ? '>' : ' ',
-                         usbSerialLoggingSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] Bloopair", cursorPos == 2 ? '>' : ' ', bloopairSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] Wiiload Plugin", cursorPos == 3 ? '>' : ' ', wiiloadSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] FTPiiU Plugin", cursorPos == 4 ? '>' : ' ', ftpiiuSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] SDCafiine Plugin", cursorPos == 5 ? '>' : ' ', sdcafiineSelected ? 'x' : ' ');
+            WHBLogPrintf("%c [%c] USB Serial logging", cursorPos == 6 ? '>' : ' ', usbSerialLoggingSelected ? 'x' : ' ');
 
+            WHBLogPrintf("");
+            
             drawToScreen("(A) Select (+) Start Download");
 
             if (input.get(TRIGGER, PAD_BUTTON_DOWN) && cursorPos != 6)
