@@ -20,7 +20,7 @@ include $(DEVKITPRO)/wut/share/wut_rules
 TARGET		:=	setup
 BUILD		:=	build
 SOURCES		:=	source \
-				source/zip
+				source/miniz
 DATA		:=	data
 INCLUDES	:=	include
 ROMFS 		:=	romfs
